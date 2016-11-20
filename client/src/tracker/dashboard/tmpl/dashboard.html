@@ -1,0 +1,18 @@
+<div class="container chart-wrapper">
+    <h3>User Tasks by Status</h3>
+    <hr/>
+    <div class="chart-container">
+        <div chart class="chart-placeholder"
+             source-array="dashboard.tasks" source-prop="status"
+             reference-array="dashboard.statuses" reference-prop="name">
+        </div>
+    </div>
+    <h3>User Tasks by Type</h3>
+    <hr/>
+    <div class="chart-container">
+        <div chart class="chart-placeholder"
+             source-array="dashboard.tasks" source-prop="type"
+             reference-array="dashboard.types" reference-prop="name">
+        </div>
+    </div>
+</div>

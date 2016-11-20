@@ -1,0 +1,12 @@
+<usertask class="user-wrapper">
+    <h2>Tasks Assigned to {{myUser.user.name}}</h2>
+    <article ng-repeat="(id, task) in myUser.tasks" class="{{task.type}}">
+        <div class="modal-header">
+            <h3>{{task.title}}</h3>
+        </div>
+        <div class="modal-body">
+            <p>{{task.description}}</p>
+        </div>
+    </article>
+</usertask>
+<!--replaced div with usertask -->

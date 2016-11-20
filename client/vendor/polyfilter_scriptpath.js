@@ -1,0 +1,1 @@
+var polyfilter_scriptpath = '/js/';

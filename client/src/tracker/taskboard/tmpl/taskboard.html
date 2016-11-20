@@ -1,0 +1,195 @@
+<!-- STORIES -->
+<div class="list-area-animation"
+     ng-class="{'list-area-expanded':!taskboard.detailsVisible}">
+    <div class="list-wrapper">
+        <ul class="list my-repeat-animation"
+            ng-repeat="status in taskboard.statuses">
+            <h3 class="status">{{status.name}}</h3>
+            <hr/>
+            <li usertask
+                ng-repeat="task in taskboard.tasks | filter: {status:status.name}"
+                drag-container="task" mime-type="application/x-tracker-status"
+                drop-container="" accepts="['application/x-tracker-status']"
+                class="task my-repeat-animation"
+                ng-click="taskboard.setCurrentTask(task)">
+
+                <div drop-target="top" on-drag-enter="taskboard.insertAdjacent(task, data, true)" on-drop="taskboard.finalizeDrop(data)"></div>
+                <div drop-target="bottom" on-drag-enter="taskboard.insertAdjacent(task, data, false)" on-drop="taskboard.finalizeDrop(data)"></div>
+
+                <article>
+                    <div>
+                        <button type="button" class="close" ng-click="usertask.deleteTask(task.id)">
+                            ×
+                        </button>
+                        <p class="title">{{task.title}}</p>
+                    </div>
+                    <div class="type-bar {{task.type}}"></div>
+                    <div>
+                        <p>{{task.description}}</p>
+                    </div>
+                </article>
+            </li>
+            <div
+                class="emptystatus"
+                drop-container="" accepts="['application/x-tracker-status']"
+                on-drop="taskboard.finalizeDrop(data)"
+                on-drag-enter="taskboard.changeStatus(data, status)"
+                ng-if="taskboard.isEmptyStatus(status)">
+            </div>
+        </ul>
+    </div>
+</div>
+
+
+<!-- task DETAILS -->
+<div class="details details-animation"
+     ng-class="{'details-visible':taskboard.detailsVisible}">
+    <div class="details-nav">
+        <div ng-if="!taskboard.detailsVisible">
+            <button class="btn pull-left btn-default"
+                    ng-click="taskboard.setDetailsVisible(true)">
+                <span class="glyphicon glyphicon-arrow-left"></span>
+            </button>
+        </div>
+        <div ng-if="taskboard.detailsVisible">
+            <button class="btn pull-right btn-default"
+                    ng-click="taskboard.setDetailsVisible(false)">
+                <span class="glyphicon glyphicon-arrow-right"></span>
+            </button>
+        </div>
+    </div>
+
+    <div ng-if="taskboard.detailsVisible" class="my-fade-animation">
+        <h3>Card Details</h3>
+
+        <form name="taskboard.detailsForm" novalidate="">
+            <div class="form-group">
+                <div class="controls">
+                    <label class="control-label" for="inputTitle">*Title</label>
+                    <input class="form-control" type="text" id="inputTitle" name="inputTitle"
+                           placeholder="Title" ng-model="taskboard.editedTask.title"
+                           ng-required="true" ng-minlength="3" ng-maxlength="30">
+
+                    <div class="alert alert-warning"
+                         ng-messages="taskboard.detailsForm.inputTitle.$error"
+                         ng-if="taskboard.showMessages('inputTitle')">
+
+                        <div ng-message="required">
+                            <small>Required!</small>
+                        </div>
+                        <div ng-message="minlength">
+                            <small>Too short!</small>
+                        </div>
+                        <div ng-message="maxlength">
+                            <small>Too long!</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="inputStatus">*Status</label>
+
+                <div class="controls">
+                    <select id="inputStatus" name="inputStatus" class="form-control" ng-model="taskboard.editedTask.status" ng-options="l.name as l.name for l in taskboard.statuses" ng-required="true">
+                        <option value="">Select Status</option>
+                    </select>
+
+                    <div
+                      ng-class="{'alert alert-error alert-warning': taskboard.detailsForm.inputStatus.$invalid}"
+                      ng-messages="taskboard.detailsForm.inputStatus.$error"
+                      ng-if="taskboard.showMessages('inputStatus')">
+
+                      <div ng-message="required">
+                        <small>Required!</small>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="inputType">*Type</label>
+
+                <div class="controls">
+                    <select id="inputType" name="inputType" class="form-control" ng-model="taskboard.editedTask.type" ng-options="t.name as t.name for t in taskboard.types" ng-required="true">
+                        <option value="">Select Type</option>
+                    </select>
+
+                    <div
+                      ng-class="{'alert alert-error alert-warning': taskboard.detailsForm.inputType.$invalid}"
+                      ng-messages="taskboard.detailsForm.inputType.$error"
+                      ng-if="taskboard.showMessages('inputType')">
+
+                      <div ng-message="required">
+                        <small>Required!</small>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="inputDescription">Description</label>
+
+                <div class="controls">
+                    <textarea id="inputDescription" name="inputDescription" class="form-control" placeholder="Description" rows="3" ng-model="taskboard.editedTask.description"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="inputAcceptance">Acceptance Criteria</label>
+
+                <div class="controls">
+                    <textarea id="inputAcceptance" name="inputAcceptance" class="form-control" placeholder="Acceptance Criteria" rows="3" ng-model="taskboard.editedTask.criteria"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">*Reporting To</label>
+
+                <div class="controls">
+                    <select ng-model="taskboard.editedTask.reporter" class="form-control"
+                        name="inputReporter" ng-required="true" ng-options="user.id as user.name for user in taskboard.users">
+                        <option value="">Please select...</option>
+                    </select>
+                    <div ng-class="{'alert alert-error alert-warning': taskboard.detailsForm.inputReporter.$invalid}"
+                         ng-messages="taskboard.detailsForm.inputReporter.$error"
+                         ng-if="taskboard.showMessages('inputReporter')">
+
+                      <div ng-message="required">
+                        <small>Required!</small>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">*Assignee</label>
+
+                <div class="controls">
+                    <select ng-model="taskboard.editedTask.assignee" class="form-control"
+                        name="inputAssignee" ng-required="true" ng-options="user.id as user.name for user in taskboard.users">
+                        <option value="">Please select...</option>
+                    </select>
+
+                    <div
+                      ng-class="{'alert alert-error alert-warning': taskboard.detailsForm.inputAssignee.$invalid}"
+                      ng-messages="taskboard.detailsForm.inputAssignee.$error"
+                      ng-if="taskboard.showMessages('inputAssignee')">
+
+                      <div ng-message="required">
+                        <small>Required!</small>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <hr>
+        <div ng-if="taskboard.currentTask">
+            <button class="btn btn-default" ng-click="taskboard.updateCancel()">
+                Cancel
+            </button>
+            <button class="btn pull-right btn-default"
+                    ng-disabled="taskboard.detailsForm.$invalid"
+                    ng-click="taskboard.updateTask()">Update</button>
+        </div>
+        <div ng-if="!taskboard.currentTask">
+            <button class="btn pull-left btn-primary" 
+                    ng-disabled="taskboard.detailsForm.$invalid"
+                    ng-click="taskboard.createTask()">New task</button>
+        </div>
+    </div>
+</div>

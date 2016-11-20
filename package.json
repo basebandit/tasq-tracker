@@ -1,0 +1,30 @@
+{
+  "name": "tasq-tracker",
+  "version": "0.0.0",
+  "description": "Task management app written with AngularJS",
+  "private": true,
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "karma start --single-run --browsers Chrome client/tests/karma.conf.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/devmars/tasq-tracker.git"
+  },
+  "devDependencies": {
+    "karma": "~0.12",
+    "karma-chrome-launcher": "^0.1.12",
+    "karma-cli": "0.0.4",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-jasmine": "^0.2.3",
+    "karma-ng-html2js-preprocessor": "^0.1.2",
+    "karma-requirejs": "^1.1.0"
+  },
+  "contributors": [
+    "Evanson Mwangi"
+  ],
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}
